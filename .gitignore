@@ -1,0 +1,6 @@
+__pycache__/
+*.py[cod]
+
+# Keep private recipient lists local.
+contacts.csv
+contacts.xlsx
