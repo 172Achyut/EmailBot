@@ -1,100 +1,91 @@
-# Job Outreach Email Sender
+# EmailBot
 
-This folder contains a Python script that reads contacts from a CSV, writes the email in your sample format, and attaches:
+EmailBot sends personalized job outreach emails from `contacts.xlsx` or `contacts.csv`, attaches your resume, and can run in preview, test, or real-send mode.
 
-`D:\Resume\FE\Achyutananda_Nayak_Resume.pdf`
+## Files
 
-## 1. Prepare contacts
+- `send_job_outreach.py` - main Python email sender
+- `run_job_outreach.ps1` - menu launcher: preview, test, or send
+- `test_job_outreach.ps1` - test-only launcher that sends generated emails to your own Gmail
+- `save_gmail_app_password.ps1` - saves your Gmail app password in Windows Credential Manager
+- `contacts_template.csv` - sample contact file format
 
-Edit `contacts.xlsx` or `contacts.csv` with columns:
+Private files like `contacts.xlsx`, `contacts.csv`, and `__pycache__` are ignored by Git.
+
+## Contact File
+
+Create or edit `contacts.xlsx` in the same folder as the scripts.
+
+Use these columns:
 
 ```csv
 email,company,name
-shubhangi.joshi@example.com,Ivanti,Shubhangi
-recruiter@example.com,Example Company,
+recruiter@example.com,Ivanti,Shubhangi
+hr@example.com,Example Company,
 ```
 
-`name` is optional. If it is blank, the email starts with `Hi there,`.
+`name` is optional. If blank, the email starts with `Hi there,`.
 
-If both `contacts.xlsx` and `contacts.csv` are present, `run_job_outreach.ps1` uses `contacts.xlsx`.
+If both `contacts.xlsx` and `contacts.csv` exist, the launcher uses `contacts.xlsx`.
 
-## 2. Preview emails
+## Resume Attachment
 
-Simplest option:
+The script attaches this resume by default:
 
-```powershell
-cd D:\Resume\outputs
-powershell -ExecutionPolicy Bypass -File .\run_job_outreach.ps1
+```text
+D:\Resume\FE\Achyutananda_Nayak_Resume.pdf
 ```
 
-Choose:
+## One-Time Password Setup
 
-- `1` for preview only
-- `2` to send test emails to `172achyutananda@gmail.com`
-- `3` to send to actual contacts
+Gmail requires a 16-character app password for SMTP. Your normal Gmail browser password will not work.
 
-The launcher uses `172achyutananda@gmail.com` and asks for the Gmail app password only when sending.
-
-To save the Gmail app password securely in Windows Credential Manager, run once:
+Run this once:
 
 ```powershell
 cd D:\Resume\scripts
 powershell -ExecutionPolicy Bypass -File .\save_gmail_app_password.ps1
 ```
 
-After that, `test_job_outreach.ps1` and `run_job_outreach.ps1` will use the saved password automatically. Spaces in the app password are removed automatically.
+Paste the Gmail app password when asked. Spaces are okay; the script removes them automatically. The password is saved in Windows Credential Manager.
 
-To send only a test email to yourself:
+## Preview Only
+
+Preview generated emails without sending:
+
+```powershell
+cd D:\Resume\scripts
+powershell -ExecutionPolicy Bypass -File .\run_job_outreach.ps1
+```
+
+Choose:
+
+```text
+1
+```
+
+## Test Send
+
+Send all generated emails only to your own Gmail address:
 
 ```powershell
 cd D:\Resume\scripts
 powershell -ExecutionPolicy Bypass -File .\test_job_outreach.ps1
 ```
 
-Manual option:
+Use this before sending to actual contacts.
 
-Run this first:
+## Send To Actual Contacts
+
+After preview and test are successful:
 
 ```powershell
-cd C:\Users\172ac\Documents\Codex\2026-06-11\files-mentioned-by-the-user-codex\outputs
-python .\send_job_outreach.py --contacts .\contacts.csv
+cd D:\Resume\scripts
+powershell -ExecutionPolicy Bypass -File .\run_job_outreach.ps1
 ```
 
-If PowerShell says `python` is not recognized, use the bundled Python available on this machine:
+Choose:
 
-```powershell
-& "C:\Users\172ac\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe" .\send_job_outreach.py --contacts .\contacts.csv
-```
-
-The script previews every email and sends nothing unless `--send` is added.
-
-## 3. Configure Gmail SMTP
-
-For Gmail, create an app password, then set these in PowerShell:
-
-```powershell
-$env:SMTP_EMAIL="yourgmail@gmail.com"
-$env:SMTP_APP_PASSWORD="your 16 character app password"
-```
-
-## 4. Send
-
-After checking the preview:
-
-```powershell
-python .\send_job_outreach.py --contacts .\contacts.csv --send
-```
-
-Bundled Python version:
-
-```powershell
-& "C:\Users\172ac\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe" .\send_job_outreach.py --contacts .\contacts.csv --send
-```
-
-Useful options:
-
-```powershell
-python .\send_job_outreach.py --contacts .\contacts.csv --limit 1
-python .\send_job_outreach.py --contacts .\contacts.csv --test-to yourgmail@gmail.com --send
-python .\send_job_outreach.py --contacts .\contacts.csv --resume "D:\Resume\FE\Achyutananda_Nayak_Resume.pdf" --send
+```text
+3
 ```
