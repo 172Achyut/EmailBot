@@ -3,10 +3,11 @@
 Send personalized job outreach emails from a CSV or Excel contacts file.
 
 Contact file columns:
-  email, company, name
+  email, company, name, job_ids
 
-The "name" column is optional. The script previews emails by default; add
---send only when you are ready to actually send them.
+The "name" and "job_ids" columns are optional. If job_ids is present, the
+script uses the referral request email template. The script previews emails by
+default; add --send only when you are ready to actually send them.
 """
 
 from __future__ import annotations
@@ -28,11 +29,33 @@ from pathlib import Path
 
 DEFAULT_RESUME_PATH = Path(r"D:\Resume\FE\Achyutananda_Nayak_Resume.pdf")
 DEFAULT_SUBJECT = "Interest in Full Stack Opportunities at {company}"
+DEFAULT_REFERRAL_SUBJECT = "Request for Referral - {job_id_label} {job_ids_inline} ({company})"
 DEFAULT_SENDER_NAME = "Achyutananda Nayak"
 DEFAULT_SMTP_HOST = "smtp.gmail.com"
 DEFAULT_SMTP_PORT = 587
 
 EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+JOB_ID_COLUMNS = (
+    "job_ids",
+    "job ids",
+    "job_id",
+    "job id",
+    "jobids",
+    "jobid",
+    "job id(s)",
+    "opening_ids",
+    "opening ids",
+    "opening_id",
+    "opening id",
+    "requisition_ids",
+    "requisition ids",
+    "requisition_id",
+    "requisition id",
+    "req_ids",
+    "req ids",
+    "req_id",
+    "req id",
+)
 
 BODY_TEMPLATE = """Hi {name},
 
@@ -52,12 +75,33 @@ Best regards,
 Achyutananda Nayak
 """
 
+REFERRAL_BODY_TEMPLATE = """Hi {name},
+
+I hope you're doing well.
+
+I came across a few opportunities at {company} and would greatly appreciate it if you could consider referring me for the following {job_id_label}:
+
+{job_id_bullets}
+
+I have 4+ years of experience as a Full Stack Developer, primarily working with React, JavaScript, TypeScript, Node.js, Redux, AWS, and microservices architecture. My experience includes building scalable web applications, REST APIs, and enterprise-grade dashboards.
+
+I have attached my resume for your reference. If you find my profile suitable for any of the above roles, or any other relevant opportunities that match my experience and skill set, I would be grateful if you could consider referring me.
+
+Please let me know if you need any additional information.
+
+Thank you for your time and support.
+
+Best regards,
+Achyutananda Nayak
+"""
+
 
 @dataclass(frozen=True)
 class Contact:
     email: str
     company: str
     name: str
+    job_ids: tuple[str, ...]
     row_number: int
 
 
@@ -79,6 +123,45 @@ def normalize_row(row: dict[object, object]) -> dict[str, str]:
     return {clean_value(key).lower(): clean_value(value) for key, value in row.items()}
 
 
+def normalize_job_id(job_id: str) -> str:
+    job_id = job_id.strip()
+    if re.fullmatch(r"\d+\.0+", job_id):
+        return job_id.split(".", 1)[0]
+    return job_id
+
+
+def parse_job_ids(*values: str) -> tuple[str, ...]:
+    job_ids: list[str] = []
+    seen: set[str] = set()
+
+    for value in values:
+        if not value:
+            continue
+
+        for raw_part in re.split(r"[,;\n|&]+|\band\b", value, flags=re.IGNORECASE):
+            part = normalize_job_id(raw_part)
+            if not part:
+                continue
+
+            if re.fullmatch(r"[A-Za-z0-9_.-]+(?:\s+[A-Za-z0-9_.-]+)+", part):
+                candidates = part.split()
+            else:
+                candidates = [part]
+
+            for candidate in candidates:
+                candidate = normalize_job_id(candidate)
+                if candidate and candidate not in seen:
+                    job_ids.append(candidate)
+                    seen.add(candidate)
+
+    return tuple(job_ids)
+
+
+def extract_job_ids(row: dict[str, str]) -> tuple[str, ...]:
+    values = [row[column] for column in JOB_ID_COLUMNS if row.get(column)]
+    return parse_job_ids(*values)
+
+
 def load_contacts(path: Path) -> list[Contact]:
     suffix = path.suffix.lower()
     if suffix == ".xlsx":
@@ -96,6 +179,7 @@ def load_contacts(path: Path) -> list[Contact]:
         email = first_value(row, "email", "email_id", "mail", "mail_id")
         company = first_value(row, "company", "company_name", "organisation", "organization")
         name = first_value(row, "name", "recipient_name", "first_name") or "there"
+        job_ids = extract_job_ids(row)
 
         if not email or not company:
             problems.append(f"row {row_number}: missing email or company")
@@ -105,7 +189,7 @@ def load_contacts(path: Path) -> list[Contact]:
             problems.append(f"row {row_number}: invalid email address {email!r}")
             continue
 
-        contacts.append(Contact(email=email, company=company, name=name, row_number=row_number))
+        contacts.append(Contact(email=email, company=company, name=name, job_ids=job_ids, row_number=row_number))
 
     if problems:
         print("Skipped rows:", file=sys.stderr)
@@ -166,17 +250,43 @@ def add_attachment(message: EmailMessage, attachment_path: Path) -> None:
         )
 
 
+def format_job_ids_inline(job_ids: tuple[str, ...]) -> str:
+    if len(job_ids) <= 1:
+        return "".join(job_ids)
+    return f"{', '.join(job_ids[:-1])} & {job_ids[-1]}"
+
+
+def format_job_id_bullets(job_ids: tuple[str, ...]) -> str:
+    return "\n".join(f"- {job_id}" for job_id in job_ids)
+
+
+def build_template_context(contact: Contact) -> dict[str, str]:
+    return {
+        "company": contact.company,
+        "name": contact.name,
+        "job_id_label": "Job ID" if len(contact.job_ids) == 1 else "Job IDs",
+        "job_ids": ", ".join(contact.job_ids),
+        "job_ids_inline": format_job_ids_inline(contact.job_ids),
+        "job_id_bullets": format_job_id_bullets(contact.job_ids),
+    }
+
+
 def build_message(
     contact: Contact,
     *,
     from_email: str,
     sender_name: str,
-    subject_template: str,
+    subject_template: str | None,
     resume_path: Path,
     test_to: str | None,
 ) -> EmailMessage:
-    subject = subject_template.format(company=contact.company, name=contact.name)
-    body = BODY_TEMPLATE.format(company=contact.company, name=contact.name)
+    context = build_template_context(contact)
+    effective_subject_template = subject_template or (
+        DEFAULT_REFERRAL_SUBJECT if contact.job_ids else DEFAULT_SUBJECT
+    )
+    body_template = REFERRAL_BODY_TEMPLATE if contact.job_ids else BODY_TEMPLATE
+    subject = effective_subject_template.format(**context)
+    body = body_template.format(**context)
     to_email = test_to or contact.email
 
     message = EmailMessage()
@@ -241,7 +351,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--limit", type=int, default=None, help="Only process the first N valid contacts.")
     parser.add_argument("--delay", type=float, default=2.0, help="Seconds to wait between sent emails.")
     parser.add_argument("--test-to", default=None, help="Send every generated email to this address for testing.")
-    parser.add_argument("--subject", default=DEFAULT_SUBJECT, help="Subject template. You can use {company}.")
+    parser.add_argument(
+        "--subject",
+        default=None,
+        help="Subject template. You can use {company}, {name}, {job_ids}, {job_ids_inline}, and {job_id_label}.",
+    )
     parser.add_argument("--smtp-host", default=os.getenv("SMTP_HOST", DEFAULT_SMTP_HOST))
     parser.add_argument("--smtp-port", type=int, default=int(os.getenv("SMTP_PORT", DEFAULT_SMTP_PORT)))
     parser.add_argument("--from-email", default=os.getenv("SMTP_EMAIL"), help="Sender email address.")

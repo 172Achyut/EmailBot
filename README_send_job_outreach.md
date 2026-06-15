@@ -9,12 +9,13 @@ This folder contains a Python script that reads contacts from a CSV, writes the 
 Edit `contacts.xlsx` or `contacts.csv` with columns:
 
 ```csv
-email,company,name
-shubhangi.joshi@example.com,Ivanti,Shubhangi
-recruiter@example.com,Example Company,
+email,company,name,job_ids
+shubhangi.joshi@example.com,Ivanti,Shubhangi,
+recruiter@example.com,EXL,Palvika,"10656, 14884, 7312, 13879, 11568"
 ```
 
 `name` is optional. If it is blank, the email starts with `Hi there,`.
+`job_ids` is optional. If it has values, the script sends the referral request format. Leave it blank for the normal outreach email.
 
 If both `contacts.xlsx` and `contacts.csv` are present, `run_job_outreach.ps1` uses `contacts.xlsx`.
 

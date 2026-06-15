@@ -19,12 +19,13 @@ Create or edit `contacts.xlsx` in the same folder as the scripts.
 Use these columns:
 
 ```csv
-email,company,name
-recruiter@example.com,Ivanti,Shubhangi
-hr@example.com,Example Company,
+email,company,name,job_ids
+recruiter@example.com,Ivanti,Shubhangi,
+hr@example.com,EXL,Palvika,"10656, 14884, 7312, 13879, 11568"
 ```
 
 `name` is optional. If blank, the email starts with `Hi there,`.
+`job_ids` is optional. If it has values, the script uses the referral request email with the IDs listed in the subject and body. Leave it blank for the normal outreach email.
 
 If both `contacts.xlsx` and `contacts.csv` exist, the launcher uses `contacts.xlsx`.
 
