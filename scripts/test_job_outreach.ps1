@@ -1,9 +1,10 @@
 $ErrorActionPreference = "Stop"
 
+$RepoRoot = Split-Path $PSScriptRoot -Parent
 $PythonExe = "C:\Users\172ac\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe"
-$ScriptPath = Join-Path $PSScriptRoot "send_job_outreach.py"
-$ContactsXlsxPath = Join-Path $PSScriptRoot "contacts.xlsx"
-$ContactsCsvPath = Join-Path $PSScriptRoot "contacts.csv"
+$ScriptPath = Join-Path $RepoRoot "main.py"
+$ContactsXlsxPath = Join-Path $RepoRoot "contacts.xlsx"
+$ContactsCsvPath = Join-Path $RepoRoot "contacts.csv"
 $SenderEmail = "172achyutananda@gmail.com"
 
 . (Join-Path $PSScriptRoot "gmail_credential.ps1")

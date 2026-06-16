@@ -1,9 +1,10 @@
 $ErrorActionPreference = "Stop"
 
+$RepoRoot = Split-Path $PSScriptRoot -Parent
 $PythonExe = "C:\Users\172ac\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe"
-$ScriptPath = Join-Path $PSScriptRoot "send_job_outreach.py"
-$ContactsXlsxPath = Join-Path $PSScriptRoot "contacts.xlsx"
-$ContactsCsvPath = Join-Path $PSScriptRoot "contacts.csv"
+$ScriptPath = Join-Path $RepoRoot "main.py"
+$ContactsXlsxPath = Join-Path $RepoRoot "contacts.xlsx"
+$ContactsCsvPath = Join-Path $RepoRoot "contacts.csv"
 $SenderEmail = "172achyutananda@gmail.com"
 
 . (Join-Path $PSScriptRoot "gmail_credential.ps1")
@@ -23,7 +24,7 @@ elseif (Test-Path -LiteralPath $ContactsCsvPath) {
     $ContactsPath = $ContactsCsvPath
 }
 else {
-    $TemplatePath = Join-Path $PSScriptRoot "contacts_template.csv"
+    $TemplatePath = Join-Path $RepoRoot "samples\contacts_template.csv"
     if (Test-Path -LiteralPath $TemplatePath) {
         Copy-Item -LiteralPath $TemplatePath -Destination $ContactsCsvPath
         Write-Host "Created contacts.csv from contacts_template.csv. Edit contacts.csv with real emails, then run this again."

@@ -4,11 +4,18 @@ EmailBot sends personalized job outreach emails from `contacts.xlsx` or `contact
 
 ## Files
 
-- `send_job_outreach.py` - main Python email sender
-- `run_job_outreach.ps1` - menu launcher: preview, test, or send
-- `test_job_outreach.ps1` - test-only launcher that sends generated emails to your own Gmail
-- `save_gmail_app_password.ps1` - saves your Gmail app password in Windows Credential Manager
-- `contacts_template.csv` - sample contact file format
+- `main.py` - entry point (`python main.py` or `python -m emailbot`)
+- `emailbot/` - application package
+  - `cli.py` - argument parsing and orchestration
+  - `config.py` - defaults and shared paths
+  - `models.py` - `Contact` data model
+  - `services/contacts.py` - load/validate contacts from CSV or XLSX
+  - `services/jobids.py` - parse and normalize job IDs
+  - `services/templates.py` - load templates and build template context
+  - `services/mailer.py` - build messages, preview, and SMTP delivery
+- `templates/` - email bodies (`outreach.txt`, `referral.txt`)
+- `scripts/` - Windows PowerShell launchers and Gmail credential helper
+- `samples/contacts_template.csv` - sample contact file format
 
 Private files like `contacts.xlsx`, `contacts.csv`, and `__pycache__` are ignored by Git.
 
