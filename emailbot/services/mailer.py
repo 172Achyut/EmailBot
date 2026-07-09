@@ -39,9 +39,14 @@ def build_message(
     test_to: str | None,
 ) -> EmailMessage:
     context = build_template_context(contact)
-    effective_subject_template = subject_template or (
-        config.DEFAULT_REFERRAL_SUBJECT if contact.job_ids else config.DEFAULT_SUBJECT
-    )
+    if subject_template:
+        effective_subject_template = subject_template
+    elif contact.frontend_outreach:
+        effective_subject_template = config.DEFAULT_FRONTEND_SUBJECT
+    elif contact.job_ids:
+        effective_subject_template = config.DEFAULT_REFERRAL_SUBJECT
+    else:
+        effective_subject_template = config.DEFAULT_SUBJECT
     subject = effective_subject_template.format(**context)
     body = render_body(contact, context)
     to_email = test_to or contact.email

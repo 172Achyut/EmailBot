@@ -8,6 +8,7 @@ from emailbot import config
 from emailbot.models import Contact
 
 OUTREACH_TEMPLATE = "outreach.txt"
+FRONTEND_OUTREACH_TEMPLATE = "frontend_outreach.txt"
 REFERRAL_TEMPLATE = "referral.txt"
 
 
@@ -38,5 +39,10 @@ def build_template_context(contact: Contact) -> dict[str, str]:
 
 
 def render_body(contact: Contact, context: dict[str, str]) -> str:
-    template_name = REFERRAL_TEMPLATE if contact.job_ids else OUTREACH_TEMPLATE
+    if contact.frontend_outreach:
+        template_name = FRONTEND_OUTREACH_TEMPLATE
+    elif contact.job_ids:
+        template_name = REFERRAL_TEMPLATE
+    else:
+        template_name = OUTREACH_TEMPLATE
     return load_template(template_name).format(**context)

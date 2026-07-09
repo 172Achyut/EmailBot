@@ -13,7 +13,7 @@ EmailBot sends personalized job outreach emails from `contacts.xlsx` or `contact
   - `services/jobids.py` - parse and normalize job IDs
   - `services/templates.py` - load templates and build template context
   - `services/mailer.py` - build messages, preview, and SMTP delivery
-- `templates/` - email bodies (`outreach.txt`, `referral.txt`)
+- `templates/` - email bodies (`outreach.txt`, `frontend_outreach.txt`, `referral.txt`)
 - `scripts/` - Windows PowerShell launchers and Gmail credential helper
 - `samples/contacts_template.csv` - sample contact file format
 
@@ -26,13 +26,15 @@ Create or edit `contacts.xlsx` in the same folder as the scripts.
 Use these columns:
 
 ```csv
-email,company,name,job_ids
-recruiter@example.com,Ivanti,Shubhangi,
-hr@example.com,EXL,Palvika,"10656, 14884, 7312, 13879, 11568"
+email,company,name,job_ids,frontend_outreach
+recruiter@example.com,Ivanti,Shubhangi,,
+frontend.recruiter@example.com,Example Company,Anu,,yes
+hr@example.com,EXL,Palvika,"10656, 14884, 7312, 13879, 11568",
 ```
 
 `name` is optional. If blank, the email starts with `Hi there,`.
 `job_ids` is optional. If it has values, the script uses the referral request email with the IDs listed in the subject and body. Leave it blank for the normal outreach email.
+`frontend_outreach` is optional. Put `yes` to use the frontend role outreach email from `templates/frontend_outreach.txt`. Leave it blank for the normal outreach/referral behavior.
 
 If both `contacts.xlsx` and `contacts.csv` exist, the launcher uses `contacts.xlsx`.
 

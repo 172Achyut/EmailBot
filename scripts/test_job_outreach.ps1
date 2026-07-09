@@ -16,7 +16,7 @@ elseif (Test-Path -LiteralPath $ContactsCsvPath) {
     $ContactsPath = $ContactsCsvPath
 }
 else {
-    throw "contacts.xlsx or contacts.csv not found. Create one with columns: email,company,name"
+    throw "contacts.xlsx or contacts.csv not found. Create one with columns: email,company,name,job_ids,frontend_outreach"
 }
 
 Write-Host "Test mode: generated emails will be sent only to $SenderEmail"

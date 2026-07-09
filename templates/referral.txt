@@ -8,7 +8,7 @@ I came across a few opportunities at {company} and would greatly appreciate it i
 
 I have 4+ years of experience as a Full Stack Developer, primarily working with React, JavaScript, TypeScript, Node.js, Redux, AWS, and microservices architecture. My experience includes building scalable web applications, REST APIs, and enterprise-grade dashboards.
 
-I have attached my resume for your reference. If you find my profile suitable for any of the above roles, or any other relevant opportunities that match my experience and skill set, I would be grateful if you could consider referring me.
+I am an immediate joiner and have attached my resume for your reference. If you find my profile suitable for any of the above roles, or any other relevant opportunities that match my experience and skill set, I would be grateful if you could consider referring me.
 
 Please let me know if you need any additional information.
 

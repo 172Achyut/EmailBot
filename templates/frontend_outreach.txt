@@ -1,0 +1,14 @@
+Hi {name},
+
+I hope you're doing well.
+
+I came across a Frontend Software Engineer opening at {company} and wanted to reach out to see if you could consider my profile for the role.
+
+I have 4+ years of experience in software development, primarily working with React, Next.js, JavaScript, TypeScript, Redux, Node.js, and AWS. I have built scalable web applications, reusable UI components, enterprise dashboards, REST API integrations, and performance-focused user experiences.
+
+Based on my background, I believe I could be a strong fit for frontend roles at {company}. If the opening is still active, I would be grateful if you could review my profile or guide me through the appropriate application process. I am an immediate joiner and have attached my resume for your review.
+
+Thank you for your time and consideration.
+
+Best regards,
+Achyutananda Nayak

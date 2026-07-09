@@ -1,3 +1,4 @@
-email,company,name,job_ids
-shubhangi.joshi@example.com,Ivanti,Shubhangi,
-recruiter@example.com,EXL,Palvika,"10656, 14884, 7312, 13879, 11568"
+email,company,name,job_ids,frontend_outreach
+shubhangi.joshi@example.com,Ivanti,Shubhangi,,
+frontend.recruiter@example.com,Example Company,Anu,,yes
+recruiter@example.com,EXL,Palvika,"10656, 14884, 7312, 13879, 11568",

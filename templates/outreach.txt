@@ -4,11 +4,11 @@ I hope you're doing well.
 
 I came across your profile while exploring opportunities at {company} and wanted to reach out regarding any Full Stack Software Engineer openings that may be available.
 
-I have 4 years of experience in software development, primarily working with React, Next.js, JavaScript, TypeScript, Node.js, Redux, AWS, and microservices. Throughout my career, I've built scalable web applications, REST APIs, enterprise dashboards, and performance-focused user experiences.
+I have 4+ years of experience in software development, primarily working with React, Next.js, JavaScript, TypeScript, Node.js, Redux, AWS, and microservices. Throughout my career, I've built scalable web applications, REST APIs, enterprise dashboards, and performance-focused user experiences.
 
 I'm currently exploring opportunities where I can contribute to impactful products while continuing to grow as an engineer. Based on my background, I believe I could be a strong fit for Full Stack roles at {company}.
 
-If there are any relevant openings, I would be grateful if you could consider my profile or guide me through the appropriate application process. I've attached my resume for your review.
+If there are any relevant openings, I would be grateful if you could consider my profile or guide me through the appropriate application process. I am an immediate joiner and have attached my resume for your review.
 
 Thank you for your time and consideration.
 

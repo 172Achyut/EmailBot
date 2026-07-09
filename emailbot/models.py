@@ -11,4 +11,5 @@ class Contact:
     company: str
     name: str
     job_ids: tuple[str, ...]
+    frontend_outreach: bool
     row_number: int

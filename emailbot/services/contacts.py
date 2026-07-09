@@ -11,6 +11,14 @@ from emailbot.models import Contact
 from emailbot.services.jobids import extract_job_ids
 
 EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+YES_VALUES = {"1", "true", "yes", "y"}
+FRONTEND_OUTREACH_COLUMNS = (
+    "frontend_outreach",
+    "frontend outreach",
+    "frontend_outreach_yes",
+    "frontend outreach yes",
+    "frontend",
+)
 
 
 def clean_value(value: object) -> str:
@@ -25,6 +33,10 @@ def first_value(row: dict[str, str], *names: str) -> str:
         if value:
             return value.strip()
     return ""
+
+
+def is_yes(value: str) -> bool:
+    return value.strip().lower() in YES_VALUES
 
 
 def normalize_row(row: dict[object, object]) -> dict[str, str]:
@@ -49,6 +61,7 @@ def load_contacts(path: Path) -> list[Contact]:
         company = first_value(row, "company", "company_name", "organisation", "organization")
         name = first_value(row, "name", "recipient_name", "first_name") or "there"
         job_ids = extract_job_ids(row)
+        frontend_outreach = is_yes(first_value(row, *FRONTEND_OUTREACH_COLUMNS))
 
         if not email or not company:
             problems.append(f"row {row_number}: missing email or company")
@@ -58,7 +71,16 @@ def load_contacts(path: Path) -> list[Contact]:
             problems.append(f"row {row_number}: invalid email address {email!r}")
             continue
 
-        contacts.append(Contact(email=email, company=company, name=name, job_ids=job_ids, row_number=row_number))
+        contacts.append(
+            Contact(
+                email=email,
+                company=company,
+                name=name,
+                job_ids=job_ids,
+                frontend_outreach=frontend_outreach,
+                row_number=row_number,
+            )
+        )
 
     if problems:
         print("Skipped rows:", file=sys.stderr)

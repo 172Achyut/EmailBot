@@ -31,7 +31,7 @@ else {
         exit 0
     }
 
-    throw "contacts.xlsx or contacts.csv not found. Create one with columns: email,company,name"
+    throw "contacts.xlsx or contacts.csv not found. Create one with columns: email,company,name,job_ids,frontend_outreach"
 }
 
 Write-Host "Using contacts file: $ContactsPath"
